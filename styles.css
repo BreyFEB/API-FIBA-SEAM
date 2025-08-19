@@ -1,0 +1,234 @@
+/* CSS Custom Properties for team colors */
+:root {
+  --local-team-color: #dc3545;
+  --away-team-color: #0d6efd;
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+  
+.main-game-summary {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 15px; 
+}
+  
+.main-score {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+  
+.main-local-team, .main-away-team {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+  
+.main-local-logo, .main-away-logo {
+    width: 5em;
+    height: auto;
+}
+  
+/* Main nav bar of game sections */
+.nav-scrollable-container {
+    overflow-x: auto;
+    background-color: transparent;
+    padding: 0;
+}
+  
+.game-tabs-nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    padding: 0 0px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+  
+@media (min-width: 470px) {
+.game-tabs-nav {
+    justify-content: center;
+    }
+}
+  
+nav.game-tabs-nav > a {
+    white-space: nowrap;
+    text-decoration: none;
+    color: grey;
+    border-bottom: 2px solid transparent;
+    padding: 8px 6px;
+    flex-shrink: 0;
+    max-width: max-content;
+}
+
+/* Table row uniform height and player name truncation */
+.table.table-sm tbody tr {
+    height: 2.25rem;
+}
+.table.table-sm td, .table.table-sm th {
+    vertical-align: middle;
+}
+.player-name-cell {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.player-name-col {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 1%;
+    min-width: 60px;
+}
+.resumen-table-wrap {
+    width: 90vw;
+    max-width: 90vw;
+    overflow: auto;
+    margin: 0 auto;
+}
+
+/* Make DOR and numeric columns as narrow as possible */
+table th, table td {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Sort indicators */
+th.table-sort-desc::after,
+th.table-sort-asc::after {
+    content: '';
+    display: inline-block;
+    margin-left: 6px;
+}
+th.table-sort-desc::after {
+    content: '↓'; /* ↓ */
+}
+th.table-sort-asc::after {
+    content: '↑'; /* ↑ */
+}
+
+/* Box Score */
+.boxscore-table-wrap {
+    width: 90vw;
+    max-width: 90vw;
+    overflow: auto;
+    margin: 0 auto;
+}
+.boxscore-table {
+    white-space: nowrap;
+}
+.boxscore-table th, .boxscore-table td {
+    text-align: center;
+    width: 1%;
+}
+.boxscore-table th.player-name-col {
+    text-align: center;
+    min-width: 80px;
+}
+.boxscore-table td.player-name-cell {
+    text-align: left;
+    min-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.boxscore-table .starter-icon {
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: -1px;
+}
+.boxscore-table .starter-text {
+    fill: #0d6efd;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-weight: 600;
+}
+
+/* Play By Play */
+.pbp-list {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.pbp-item .pbp-time {
+    width: 3.5rem;
+    text-align: left;
+}
+.pbp-item .pbp-score {
+    min-width: 4.5rem;
+}
+.pbp-item {
+    position: relative;
+    overflow: hidden;
+}
+.pbp-item.pbp-local { box-shadow: inset 4px 0 0 0 var(--local-team-color); }
+.pbp-item.pbp-away { box-shadow: inset 4px 0 0 0 var(--away-team-color); }
+.pbp-item.pbp-neutral { box-shadow: inset 4px 0 0 0 #000; }
+
+/* Comparativas styles */
+.comparativa-stat {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stat-header {
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.stat-comparison {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.stat-bar-container {
+    height: 24px;
+    background-color: #dee2e6;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.stat-bar {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.6s ease-in-out;
+}
+
+.stat-bar-local {
+    background-color: var(--local-team-color);
+}
+
+.stat-bar-away {
+    background-color: var(--away-team-color);
+}
+
+.team-stat-higher .team-name,
+.team-stat-higher .stat-value {
+    font-weight: 700; /* Bolder than default fw-bold (600) */
+}
+
+.team-stat-lower .team-name,
+.team-stat-lower .stat-value {
+    font-weight: 400; /* Lighter than default fw-bold (600) */
+}
+
+@media (max-width: 576px) {
+    .comparativa-stat {
+        margin: 0 0.5rem;
+    }
+    
+    .stat-comparison {
+        padding: 0.75rem;
+    }
+}
+

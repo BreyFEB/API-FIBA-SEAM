@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="main-game-summary">
+    <!-- Local team flag, score, and name -->
+    <div class="main-local-team">
+      <img class="main-local-logo" src="https://assets.fiba.basketball/image/upload/d_.logoflag--dark--organisation_138.webp/w_800/f_auto/q_auto/.logoflag--dark--organisation_138--competition_208916?buster=20312">
+      <h2 class="main-local-teamname">Local</h2>
+    </div>
+    <!-- Main score part -->
+    <div class="main-score">
+      <!-- Marcador del partido -->
+      <div class="game-score">
+        <span class="main-local-team-score fs-4">0
+        </span><span class="score-separator"> - </span>
+        <span class="main-away-team-score fs-4">0</span>
+      </div>
+      <!-- Tiempo que ha pasado/queda en el partido -->
+      <div class="game-time">
+        <span class="game-time-span badge rounded-pill text-bg-info">FINAL</span>
+      </div>
+    </div>
+    <!-- Away team flag, score, and name -->
+    <div class="main-away-team">
+      <img class="main-away-logo" src="https://assets.fiba.basketball/image/upload/d_.logoflag--dark--organisation_59.webp/w_800/f_auto/q_auto/.logoflag--dark--organisation_59--competition_208916?buster=20312">
+      <h2 class="main-away-teamname">Visitante</h2>
+    </div>
+  </div>
+  <!-- Nav bar for game sections ie Box Score, Advanced stats etc -->
+  <div class="">
+    <nav class="nav nav-pills justify-content-start justify-content-md-center flex-nowrap text-nowrap overflow-x-auto" id="main-tabs">
+      <a href="#" class="nav-item nav-link active" data-section="section-resumen">Resumen</a>
+      <a href="#" class="nav-item nav-link" data-section="section-boxscore">Box Score</a>
+      <a href="#" class="nav-item nav-link" data-section="section-pbp">Play By Play</a>
+      <a href="#" class="nav-item nav-link" data-section="section-comparativas">Comparativas</a>
+      <a href="#" class="nav-item nav-link" data-section="section-tiros">Mapa de tiros</a>
+    </nav>
+  </div>
+  <div id="section-resumen" class="mt-3">
+    <div id="resumen-tab-content">
+      <ul class="nav nav-underline mb-3 justify-content-center" id="team-pills" role="tablist"></ul>
+      <div class="tab-content" id="team-tab-content"></div>
+      <template id="team-pill-template">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="pill" type="button" role="tab"></button>
+        </li>
+      </template>
+      <template id="team-pane-template">
+        <div class="tab-pane fade" role="tabpanel">
+          <div class="resumen-table-wrap">
+            <table class="table table-bordered table-striped table-sm mb-0 resumen-table">
+              <thead>
+                <tr>
+                  <th title="Dorsal" data-sort-key="uniformNumber">DOR</th>
+                  <th title="Jugador" data-sort-key="name" class="player-name-col">JUG</th>
+                  <th title="Puntos" data-sort-key="points">PTS</th>
+                  <th title="Rebotes" data-sort-key="rebounds">REB</th>
+                  <th title="Asistencias" data-sort-key="assists">AST</th>
+                  <th title="Eficiencia" data-sort-key="efficiency">EFI</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div id="section-pbp" class="mt-3 d-none">
+    <ul class="nav nav-underline mb-3 justify-content-center" id="pbp-quarter-pills" role="tablist"></ul>
+    <div class="tab-content" id="pbp-quarter-tab-content"></div>
+    <div id="pbp-list" class="pbp-list d-none"></div>
+    <template id="pbp-quarter-pill-template">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" type="button" role="tab"></button>
+      </li>
+    </template>
+    <template id="pbp-quarter-pane-template">
+      <div class="tab-pane fade" role="tabpanel">
+        <div class="pbp-list"></div>
+      </div>
+    </template>
+    <template id="pbp-item-template">
+      <div class="pbp-item card mb-2">
+        <div class="card-body py-2">
+          <div class="d-flex align-items-center">
+            <div class="pbp-time text-muted small me-3">00:00</div>
+            <div class="pbp-action flex-grow-1 fw-semibold">Action text</div>
+            <div class="pbp-score badge text-bg-light ms-3">00 - 00</div>
+          </div>
+          <div class="pbp-meta text-muted small mt-1"></div>
+        </div>
+      </div>
+    </template>
+  </div>
+  <div id="section-boxscore" class="mt-3 d-none">
+    <ul class="nav nav-underline mb-3 justify-content-center" id="boxscore-team-pills" role="tablist"></ul>
+    <div class="tab-content" id="boxscore-team-tab-content"></div>
+    <template id="boxscore-team-pill-template">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" type="button" role="tab"></button>
+      </li>
+    </template>
+    <template id="boxscore-team-pane-template">
+      <div class="tab-pane fade" role="tabpanel">
+        <div class="boxscore-table-wrap">
+          <table class="table table-bordered table-striped table-sm mb-0 boxscore-table">
+            <thead>
+              <tr>
+                <th title="Dorsal" data-sort-key="uniformNumber">DOR</th>
+                <th title="Jugador" data-sort-key="name" class="player-name-col">JUG</th>
+                <th title="Minutos" data-sort-key="minutes">MIN</th>
+                <th title="Puntos" data-sort-key="points">PTS</th>
+                <th title="Tiros de campo anotados" data-sort-key="fieldGoalsMade">TC-A</th>
+                <th title="Tiros de campo intentados" data-sort-key="fieldGoalsAttempted">TC-I</th>
+                <th title="Porcentaje tiros de campo" data-sort-key="fieldGoalsPercentage">TC%</th>
+                <th title="Tiros de 2 anotados" data-sort-key="twoPointsMade">2P-A</th>
+                <th title="Tiros de 2 intentados" data-sort-key="twoPointsAttempted">2P-I</th>
+                <th title="Porcentaje tiros de 2" data-sort-key="twoPointsPercentage">2P%</th>
+                <th title="Triples anotados" data-sort-key="threePointsMade">3P-A</th>
+                <th title="Triples intentados" data-sort-key="threePointsAttempted">3P-I</th>
+                <th title="Porcentaje triples" data-sort-key="threePointsPercentage">3P%</th>
+                <th title="Tiros libres anotados" data-sort-key="freeThrowsMade">TL-A</th>
+                <th title="Tiros libres intentados" data-sort-key="freeThrowsAttempted">TL-I</th>
+                <th title="Porcentaje tiros libres" data-sort-key="freeThrowsPercentage">TL%</th>
+                <th title="Rebotes ofensivos" data-sort-key="offensiveRebounds">REB-O</th>
+                <th title="Rebotes defensivos" data-sort-key="defensiveRebounds">REB-D</th>
+                <th title="Total rebotes" data-sort-key="rebounds">REB</th>
+                <th title="Asistencias" data-sort-key="assists">AST</th>
+                <th title="Faltas personales" data-sort-key="personalFouls">FP</th>
+                <th title="Pérdidas" data-sort-key="turnovers">PER</th>
+                <th title="Robos" data-sort-key="steals">ROB</th>
+                <th title="Tapones" data-sort-key="blockedShots">TAP</th>
+                <th title="+/- en cancha" data-sort-key="plusMinus">+/-</th>
+                <th title="Eficiencia" data-sort-key="efficiency">EFI</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </template>
+  </div>
+  <div id="section-comparativas" class="mt-3 d-none">
+    <div class="container-fluid">
+      <ul class="nav nav-underline mb-3 justify-content-center" id="comparativas-sub-pills" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="basica-tab" data-bs-toggle="pill" data-bs-target="#basica-pane" type="button" role="tab" aria-controls="basica-pane" aria-selected="true">Básica</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="avanzada-tab" data-bs-toggle="pill" data-bs-target="#avanzada-pane" type="button" role="tab" aria-controls="avanzada-pane" aria-selected="false">Avanzada</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="comparativas-sub-tab-content">
+        <div class="tab-pane fade show active" id="basica-pane" role="tabpanel" aria-labelledby="basica-tab">
+          <div class="container-fluid">
+            <div id="comparativas-basica-container">
+              <!-- Basic comparative stats will be populated here -->
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="avanzada-pane" role="tabpanel" aria-labelledby="avanzada-tab">
+          <div class="container-fluid">
+            <div id="comparativas-container">
+              <!-- Comparative stats will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <template id="comparativa-stat-template">
+      <div class="comparativa-stat mb-4">
+        <div class="stat-header bg-dark text-white p-2 mb-3">
+          <h5 class="mb-0 stat-title"></h5>
+        </div>
+        <div class="stat-comparison">
+          <div class="team-stat mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="team-name">Local</span>
+              <span class="stat-value">0</span>
+            </div>
+            <div class="stat-bar-container">
+              <div class="stat-bar"></div>
+            </div>
+          </div>
+          <div class="team-stat">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="team-name">Visitante</span>
+              <span class="stat-value">0</span>
+            </div>
+            <div class="stat-bar-container">
+              <div class="stat-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Four Factors Glossary Modal -->
+  <div class="modal fade" id="fourFactorsGlossaryModal" tabindex="-1" aria-labelledby="fourFactorsGlossaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="fourFactorsGlossaryModalLabel">Glosario: Four Factors</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-4">
+            <h6 class="fw-bold mb-2">Porcentaje de tiro efectivo (eFG%)</h6>
+            <p class="text-muted mb-0">Mide la eficiencia de tiro considerando que los triples valen más que los tiros de 2 puntos. Un eFG% más alto indica mejor eficiencia ofensiva.</p>
+          </div>
+          
+          <div class="mb-4">
+            <h6 class="fw-bold mb-2">Porcentaje de pérdidas (TOV%)</h6>
+            <p class="text-muted mb-0">Mide qué porcentaje de posesiones termina en pérdida. Un TOV% más bajo es mejor, ya que indica que el equipo cuida mejor el balón.</p>
+          </div>
+          
+          <div class="mb-4">
+            <h6 class="fw-bold mb-2">Porcentaje de rebotes ofensivos capturados (ORB%)</h6>
+            <p class="text-muted mb-0">Mide qué porcentaje de rebotes ofensivos disponibles captura el equipo. Un ORB% más alto significa más segundas oportunidades de anotar.</p>
+          </div>
+          
+          <div class="mb-4">
+            <h6 class="fw-bold mb-2">Factor de tiros libres (FT/FGA)</h6>
+            <p class="text-muted mb-0">Mide la capacidad del equipo de generar tiros libres en relación a sus tiros de campo (de dos y de tres). Un factor más alto indica mayor habilidad para generar faltas.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Bootstrap JS with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
+<script type="module" src="src/main.js"></script>
+<script type="module" src="src/dataLoader.js"></script>
+<script type="module" src="src/boxscoreResumen.js"></script>
+<script type="module" src="src/playByPlay.js"></script>
+<script type="module" src="src/boxScore.js"></script>
+<script type="module" src="src/avanzado.js"></script>
+<script type="module" src="src/comparativasAvanzada.js"></script>
+<script type="module" src="src/comparativasBasica.js"></script>
+</body>
+</html>
