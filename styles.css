@@ -162,7 +162,7 @@ th.table-sort-asc::after {
 
 /* Play By Play */
 .pbp-list {
-    max-width: 900px;
+    max-width: 700px;
     margin: 0 auto;
 }
 .pbp-item .pbp-time {
@@ -177,7 +177,7 @@ th.table-sort-asc::after {
 }
 .pbp-item {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 .pbp-item.pbp-local { box-shadow: inset 4px 0 0 0 var(--local-team-color); }
 .pbp-item.pbp-away { box-shadow: inset 4px 0 0 0 var(--away-team-color); }
@@ -248,6 +248,6 @@ th.table-sort-asc::after {
     border: 1px solid #c3e6cb; /* Subtle green border */
 }
 
-.pbp-time   { flex: 0 0 15%; }
-.pbp-action { flex: 0 0 60%; }
+.pbp-time   { flex: 0 0 2.5rem; }
+.pbp-action { flex: 1 0 60%; }
 .pbp-score  { flex: 0 0 20%; }
