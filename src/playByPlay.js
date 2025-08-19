@@ -240,7 +240,7 @@ async function renderPlayByPlay() {
 
     const events = (gameActions[qKey]?.Items || [])
       .slice()
-      .sort((a, b) => timeToSeconds(a.Time) - timeToSeconds(b.Time)); // reverse chronological: last first -> append reversed
+      .sort((a, b) => parseInt(b.SORTORDER) - parseInt(a.SORTORDER)); // reverse chronological: last first -> append reversed
 
     events.forEach(ev => {
       let teamClass = 'pbp-neutral';
