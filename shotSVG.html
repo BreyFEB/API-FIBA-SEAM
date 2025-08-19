@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player 2433147 Shot Visualization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .court-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 20px 0;
+            width: 100%;
+            gap: 20px;
+        }
+        
+        .court-svg {
+            border: 2px solid #333;
+            border-radius: 5px;
+            width: 80vw;
+            height: 80vh;
+            max-width: 1200px;
+            max-height: 1000px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-circle {
+            width: 20px;
+            height: 20px;
+            border: 3px solid green;
+            border-radius: 50%;
+            background-color: transparent;
+        }
+        
+        .legend-cross {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+        
+        .legend-cross::before,
+        .legend-cross::after {
+            content: '';
+            position: absolute;
+            background-color: red;
+            width: 3px;
+            height: 20px;
+        }
+        
+        .legend-cross::before {
+            transform: rotate(45deg);
+        }
+        
+        .legend-cross::after {
+            transform: rotate(-45deg);
+        }
+        
+        .stats {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            margin: 50px 0;
+        }
+        
+        .error {
+            text-align: center;
+            color: red;
+            margin: 20px 0;
+        }
+        
+        .toggle-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .toggle-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .toggle-button:hover {
+            background-color: #45a049;
+        }
+        
+        .toggle-button.active {
+            background-color: #2196F3;
+        }
+        
+        .toggle-button.active:hover {
+            background-color: #1976D2;
+        }
+        
+        .heatmap-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            min-width: 120px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .heatmap-legend h3 {
+            margin: 0 0 15px 0;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .heatmap-legend-gradient {
+            width: 30px;
+            height: 200px;
+            margin-right: 10px;
+            background: linear-gradient(to bottom, rgba(255,0,0,1), rgba(255,0,0,0.1));
+            border: 1px solid #333;
+            border-radius: 3px;
+            position: relative;
+        }
+        
+        .heatmap-legend-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 12px;
+        }
+        
+        .heatmap-legend-max {
+            font-weight: bold;
+        }
+        
+        /* 
+        .court-svg {
+            transform: rotate(180deg);
+            transform-origin: center;
+        }
+        */
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Player 2433147 Shot Visualization</h1>
+        
+        <div class="loading" id="loading">Loading player data...</div>
+        
+        <div class="error" id="error" style="display: none;"></div>
+        
+        <div class="toggle-container">
+            <button class="toggle-button" id="showShots">Show Shots</button>
+            <button class="toggle-button" id="showZones">Show Zone Percentages</button>
+            <button class="toggle-button" id="showHeatmap">Show Heatmap</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-circle"></div>
+                <span>Made Shots</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-cross"></div>
+                <span>Missed Shots</span>
+            </div>
+        </div>
+        
+        <div class="court-container">
+            <svg width="1500" height="1400" viewBox="0 0 1500 1400" xmlns="http://www.w3.org/2000/svg" class="court-svg" id="court">
+                <!-- Court background image -->
+                <image href="court-floor.avif" x="0" y="0" width="1500" height="1400" preserveAspectRatio="xMidYMid slice" opacity="0.5" id="court-background"/>
+                
+                <!-- Flip Y axis to make (0,0) bottom-left -->
+                <g transform="scale(1,-1) translate(0,-1400)">
+                    <!-- All fills -->
+                    <!-- Rim area fill -->
+                    
+
+                    <!-- Area between 3-point line and paint -->
+                    <!-- Mid-range fill -->
+                    <path d="M90,0 L90,300 A675,675 0 0,0 1410,300 L1410,0 Z M505,0 L505,580 L995,580 L995,0 Z" fill="white" fill-rule="evenodd" opacity="0" id="mid-range-zone"/>
+                    <!-- Left mid-range area -->
+                    <path
+                        id="left-midrange-zone"
+                        d="
+                        M90,300
+                        A675,675 0 0,0 750,832.5
+                        L750,580
+                        L505,580
+                        L505,0
+                        L90,0
+                        Z"
+                        fill="white"
+                        stroke="darkblue"
+                        stroke-width="15"
+                        opacity="0"
+                    />                    
+                    <!-- Right mid-range area -->
+                    <path
+                        id="right-midrange-zone"
+                        d="
+                        M750,832.5
+                        A675,675 0 0,0 1410,300
+                        L1410,0
+                        L995,0
+                        L995,580
+                        L750,580
+                        Z"
+                        fill="white"
+                        stroke="darkblue"
+                        stroke-width="15"
+                        opacity="0"
+                    />
+                    <!-- Paint area fill -->
+                    <path d="M505,0 H995 V580 H505 Z M620,117.5 L880,117.5 L880,157.5 A130,130 0 0,1 620,157.5 Z" fill="white" fill-rule="evenodd" stroke="darkblue" stroke-width="15" opacity="0" id="paint-zone"/>
+
+                    <!-- Rim area fill -->
+                    <path d="M620,117.5 L880,117.5 L880,157.5 A130,130 0 0,1 620,157.5 Z" fill="white" stroke="darkblue" stroke-width="15" opacity="0" id="rim-zone"/>
+
+                    <!-- Above the break 3pt area fill -->
+                    <path d="M0,1400 L1500,1400 L1500,300 L1410,300 A675,675 0 0,1 90,300 L0,300 Z" fill="white" opacity="0" id="above-break-zone"/>
+                    <!-- Left above the break 3pt -->
+                    <path id="left-above-break-zone"
+                        d="
+                        M0,300
+                        L0,1400
+                        L750,1400
+                        L750,832.5
+                        A675,675 0 0,1 90,300
+                        L0,300
+                        Z"
+                        fill="white"
+                        stroke="darkblue"
+                        stroke-width="15"
+                        opacity="0"
+                    />
+                    <!-- Right above the break 3pt -->
+                    <path id="right-above-break-zone"
+                        d="
+                        M750,832.5
+                        A675,675 0 0,0 1410,300
+                        L1500,300
+                        L1500,1400
+                        L750,1400
+                        Z"
+                        fill="white"
+                        stroke="darkblue"
+                        stroke-width="15"
+                        opacity="0"
+                    />
+
+                    <!-- Corner threes fill -->
+                    <!-- Left corner three fill -->
+                    <rect x="0" y="0" width="90" height="300" fill="white" stroke="darkblue" stroke-width="15" opacity="0" id="left-corner-zone"/>
+                    <!-- Right corner three fill -->
+                    <rect x="1410" y="0" width="90" height="300" fill="white" stroke="darkblue" stroke-width="15" opacity="0" id="right-corner-zone"/>
+                    <!-- Court border -->
+                    <rect x="0" y="0" width="1500" height="1400" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- Heatmap will be added here dynamically -->
+                    <g id="heatmap-container" style="display: none;"></g>
+
+                    <!-- Vertical lines for corner threes -->
+                    <line x1="90" y1="0" x2="90" y2="300" stroke="black" stroke-width="8"/>
+                    <line x1="1410" y1="0" x2="1410" y2="300" stroke="black" stroke-width="8"/>
+
+                    <!-- Top arc (3pt line, facing up) -->
+                    <path d="M90,300 A675,675 0 0,0 1410,300" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- Key (paint area) -->
+                    <line x1="505" y1="0" x2="505" y2="580" stroke="black" stroke-width="8"/>
+                    <line x1="995" y1="0" x2="995" y2="580" stroke="black" stroke-width="8"/>
+                    <line x1="500" y1="580" x2="1000" y2="580" stroke="black" stroke-width="8"/>
+
+                    <!-- Free-throw semicircle (top half) -->
+                    <path d="M570,580 A180,180 0 0,0 930,580" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- No-charge semicircle arc (top half) -->
+                    <path d="M620,157.5 A130,130 0 0,0 880,157.5" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- No-charge semicircle left line -->
+                    <line x1="620" y1="157.5" x2="620" y2="137.5" stroke="black" stroke-width="8"/>
+                    <!-- No-charge semicircle right line -->
+                    <line x1="880" y1="157.5" x2="880" y2="137.5" stroke="black" stroke-width="8"/>
+
+                    <!-- Small vertical line under basket -->
+                    <line x1="750" y1="117.5" x2="750" y2="137.5" stroke="black" stroke-width="8"/>
+
+                    <!-- Backboard line -->
+                    <line x1="650" y1="117.5" x2="850" y2="117.5" stroke="black" stroke-width="8"/>
+
+                    <!-- Basket circle -->
+                    <circle cx="750" cy="157.5" r="20" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- New semicircle at top of court (lower half only) -->
+                    <path d="M570,1400 A180,180 0 0,1 930,1400" fill="none" stroke="black" stroke-width="8"/>
+
+                    <!-- Shots will be added here dynamically -->
+                    <g id="shots-container"></g>
+
+                    <!-- Zone cards will be added here dynamically -->
+                    <g id="zone-cards-container" style="display:none;"></g>
+                    
+                </g>
+            </svg>
+            
+            <div class="heatmap-legend" id="heatmap-legend">
+                <h3>Shot Density</h3>
+                <div class="heatmap-container">
+                    <div class="heatmap-legend-gradient"></div>
+                    <div class="heatmap-legend-labels">
+                        <div class="heatmap-legend-max" id="heatmap-max-label">0 shots</div>
+                        <div id="heatmap-min-label">0 shots</div>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+        
+        <div class="stats" id="stats"></div>
+    </div>
+
+    <script>
+        const PLAYER_ID = "2433147";
+        const COURT_WIDTH = 1500;
+        const COURT_HEIGHT = 1400;
+        let playerShots = [];
+        let currentMode = 'shots'; // 'shots', 'zones', or 'heatmap'
+        
+        // Function to convert coordinates from JSON to SVG
+        function convertCoordinates(xMeters, yMeters) {
+            // Multiply by 100 and switch coordinates as requested
+            const svgX = yMeters * 100; // JSON y becomes SVG x
+            const svgY = xMeters * 100; // JSON x becomes SVG y
+            
+            return { x: svgX, y: svgY };
+        }
+        
+        // Function to create a shot marker
+        function createShotMarker(x, y, made, shot) {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            
+            // Add tooltip to the group element
+            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            const quarter = shot.cuarto || 'N/A';
+            const time = shot.tiempo || 'N/A';
+            const match = shot.match || 'N/A';
+            const fecha = shot.fecha_hora || 'N/A';
+            const marcador = shot.scoreA + ' - ' + shot.scoreB;
+            title.textContent = `Cuarto: ${quarter}\nTiempo restante en cuarto: ${time}\nMarcador: ${marcador}\nPartido: ${match}\nFecha: ${fecha}`;
+            g.appendChild(title);
+            
+            // Add invisible background rectangle for better hover area
+            const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            backgroundRect.setAttribute("x", x - 20);
+            backgroundRect.setAttribute("y", y - 20);
+            backgroundRect.setAttribute("width", "35");
+            backgroundRect.setAttribute("height", "35");
+            // Use very transparent fill to capture all hovers better
+            backgroundRect.setAttribute("fill", "rgba(0,0,0,0.001)");
+            backgroundRect.setAttribute("pointer-events", "all");
+            g.appendChild(backgroundRect);
+            
+            if (made) {
+                // Green circle for made shots
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", x);
+                circle.setAttribute("cy", y);
+                circle.setAttribute("r", "12");
+                circle.setAttribute("fill", "none");
+                circle.setAttribute("stroke", "green");
+                circle.setAttribute("stroke-width", "5");
+                circle.setAttribute("pointer-events", "none");
+                g.appendChild(circle);
+            } else {
+                // Red cross for missed shots
+                const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line1.setAttribute("x1", x - 12);
+                line1.setAttribute("y1", y - 12);
+                line1.setAttribute("x2", x + 12);
+                line1.setAttribute("y2", y + 12);
+                line1.setAttribute("stroke", "red");
+                line1.setAttribute("stroke-width", "5");
+                line1.setAttribute("pointer-events", "none");
+                
+                const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line2.setAttribute("x1", x - 12);
+                line2.setAttribute("y1", y + 12);
+                line2.setAttribute("x2", x + 12);
+                line2.setAttribute("y2", y - 12);
+                line2.setAttribute("stroke", "red");
+                line2.setAttribute("stroke-width", "5");
+                line2.setAttribute("pointer-events", "none");
+                
+                g.appendChild(line1);
+                g.appendChild(line2);
+            }
+            
+            // Add hover effects to the background rectangle
+            backgroundRect.addEventListener('mouseenter', () => {
+                if (made) {
+                    // For circles, increase radius and stroke width
+                    const circle = g.querySelector('circle:not([fill="transparent"])');
+                    circle.setAttribute('r', '16');
+                    circle.setAttribute('stroke-width', '6');
+                } else {
+                    // For crosses, increase stroke width and length of both lines
+                    const lines = g.querySelectorAll('line');
+                    lines.forEach((line, index) => {
+                        line.setAttribute('stroke-width', '7');
+                        // Make lines longer
+                        if (index === 0) {
+                            // First line (top-left to bottom-right)
+                            line.setAttribute('x1', x - 16);
+                            line.setAttribute('y1', y - 16);
+                            line.setAttribute('x2', x + 16);
+                            line.setAttribute('y2', y + 16);
+                        } else {
+                            // Second line (bottom-left to top-right)
+                            line.setAttribute('x1', x - 16);
+                            line.setAttribute('y1', y + 16);
+                            line.setAttribute('x2', x + 16);
+                            line.setAttribute('y2', y - 16);
+                        }
+                    });
+                }
+            });
+            
+            backgroundRect.addEventListener('mouseleave', () => {
+                if (made) {
+                    // For circles, restore original size
+                    const circle = g.querySelector('circle:not([fill="transparent"])');
+                    circle.setAttribute('r', '12');
+                    circle.setAttribute('stroke-width', '5');
+                } else {
+                    // For crosses, restore original stroke width and length
+                    const lines = g.querySelectorAll('line');
+                    lines.forEach((line, index) => {
+                        line.setAttribute('stroke-width', '5');
+                        // Restore original line length
+                        if (index === 0) {
+                            // First line (top-left to bottom-right)
+                            line.setAttribute('x1', x - 12);
+                            line.setAttribute('y1', y - 12);
+                            line.setAttribute('x2', x + 12);
+                            line.setAttribute('y2', y + 12);
+                        } else {
+                            // Second line (bottom-left to top-right)
+                            line.setAttribute('x1', x - 12);
+                            line.setAttribute('y1', y + 12);
+                            line.setAttribute('x2', x + 12);
+                            line.setAttribute('y2', y - 12);
+                        }
+                    });
+                }
+            });
+            
+            return g;
+        }
+        
+        // Function to determine which zone a shot belongs to
+        function getShotZone(x, y) {
+            const svg = document.getElementById("court");
+            const svgPoint = svg.createSVGPoint();
+            svgPoint.x = x;
+            svgPoint.y = y;
+
+            const zones = [
+                "rim-zone",
+                "paint-zone",
+                "left-midrange-zone",
+                "right-midrange-zone",
+                "left-corner-zone",
+                "right-corner-zone",
+                "left-above-break-zone",
+                "right-above-break-zone"
+            ];
+
+            for (const zoneId of zones) {
+                const el = document.getElementById(zoneId);
+                if (!el) continue;
+
+                // Convert the point to the coordinate system of the element
+                const ctm = el.getScreenCTM();
+                if (!ctm) continue;
+
+                const transformedPoint = svgPoint.matrixTransform(ctm.inverse());
+                if (el instanceof SVGGeometryElement && el.isPointInFill(transformedPoint)) {
+                    return zoneId.replace('-zone', '');
+                }
+            }
+
+            return "unknown";
+        }
+        
+        // Function to calculate zone percentages
+        function calculateZonePercentages(shots) {
+            const zones = {
+                'paint': { shots: [], made: 0, total: 0 },
+                'rim': { shots: [], made: 0, total: 0 },
+                'left-corner': { shots: [], made: 0, total: 0 },
+                'right-corner': { shots: [], made: 0, total: 0 },
+                'left-midrange': { shots: [], made: 0, total: 0 },
+                'right-midrange': { shots: [], made: 0, total: 0 },
+                'left-above-break': { shots: [], made: 0, total: 0 },
+                'right-above-break': { shots: [], made: 0, total: 0 }
+            };
+            
+            shots.forEach(shot => {
+                if (shot.coord_x_metros !== undefined && shot.coord_y_metros !== undefined) {
+                    const coords = convertCoordinates(shot.coord_x_metros, shot.coord_y_metros);
+                    const zone = getShotZone(coords.x, coords.y);
+                    
+                    if (zones[zone]) {
+                        zones[zone].shots.push(shot);
+                        zones[zone].total++;
+                        if (shot.made) {
+                            zones[zone].made++;
+                        }
+                    }
+                }
+            });
+            
+            // Calculate percentages
+            Object.keys(zones).forEach(zone => {
+                zones[zone].percentage = zones[zone].total > 0 ? 
+                    (zones[zone].made / zones[zone].total * 100).toFixed(1) : 0;
+            });
+            
+            // Debug: Log zone statistics
+            console.log('Zone Statistics:', zones);
+            
+            return zones;
+        }
+        
+        // Function to get color based on percentage and shot type
+        function getZoneColor(percentage, zone) {
+            const pct = parseFloat(percentage);
+
+            // Zone-specific discrete thresholds
+            const thresholds = {
+                'left-above-break': { red: 30, yellow: 35 },  // 3-point above the break left
+                'right-above-break': { red: 30, yellow: 35 },  // 3-point above the break right
+                'rim':         { red: 50, yellow: 60 },
+                'paint':       { red: 40, yellow: 45 },
+                'left-midrange': { red: 40, yellow: 45 },
+                'right-midrange': { red: 40, yellow: 45 }
+            };
+
+            if (thresholds[zone]) {
+                const { red, yellow } = thresholds[zone];
+                if (pct < red) {
+                    return 'rgba(255,0,0,1)';        // red
+                }
+                if (pct < yellow) {
+                    return 'rgba(255,255,0,1)';      // yellow
+                }
+                return 'rgba(0,200,0,1)';            // green
+            }
+
+            // Default gradient for other zones (corner threes etc.)
+            const isThreePoint = zone === 'left-corner' || zone === 'right-corner';
+            const greenThreshold = isThreePoint ? 35 : 50;
+            if (pct < greenThreshold) {
+                return 'rgba(255,0,0,1)'; // red-ish
+            }
+            if (pct < greenThreshold + 5) {
+                return 'rgba(255,255,0,1)'; // yellow-ish
+            }
+            return 'rgba(0,200,0,1)'; // green
+        }
+        
+                // Function to update zone colors
+        function updateZoneColors(zones) {
+            const zoneElements = {
+                'paint': document.getElementById('paint-zone'),
+                'rim': document.getElementById('rim-zone'),
+                'left-corner': document.getElementById('left-corner-zone'),
+                'right-corner': document.getElementById('right-corner-zone'),
+                'left-midrange': document.getElementById('left-midrange-zone'),
+                'right-midrange': document.getElementById('right-midrange-zone'),
+                'left-above-break': document.getElementById('left-above-break-zone'),
+                'right-above-break': document.getElementById('right-above-break-zone')
+            };
+            
+            // Zone label positions (center of each zone) - adjusted for flipped y-coordinate system
+            const zonePositions = {
+                'paint': { x: 750, y: 950 },
+                'rim': { x: 750, y: 1170 },
+                'left-corner': { x: 45, y: 1250 },
+                'right-corner': { x: 1455, y: 1250 },
+                'left-midrange': { x: 350, y: 983.75 },
+                'right-midrange': { x: 1150, y: 983.75 },
+                'left-above-break': { x: 375, y: 550 },
+                'right-above-break': { x: 1125, y: 550 }
+            };
+            
+            // Reduce court line opacity
+            const courtLines = document.querySelectorAll('line, path[stroke="black"]');
+            courtLines.forEach(line => {
+                line.setAttribute('stroke-opacity', '0.3');
+            });
+            
+            // Clear existing labels
+            const existingLabels = document.querySelectorAll('.zone-label');
+            existingLabels.forEach(label => label.remove());
+            
+            Object.keys(zones).forEach(zone => {
+                const element = zoneElements[zone];
+                if (element) {
+                    if (zones[zone].total > 0) {
+                        const color = getZoneColor(zones[zone].percentage, zone);
+                        element.setAttribute('fill', color);
+                        const zoneOpacity = 0.7;
+                        element.setAttribute('opacity', zoneOpacity);
+                        // Ensure stroke is visible
+                        element.setAttribute('stroke', 'black');
+                        element.setAttribute('stroke-width', '10');
+                        
+                        // Create zone label
+                        createZoneLabel(zone, zones[zone], zonePositions[zone]);
+                        
+                        console.log(`Zone ${zone}: ${zones[zone].made}/${zones[zone].total} (${zones[zone].percentage}%) - Color: ${color}`);
+                    } else {
+                        // Set a neutral color for zones with no shots
+                        element.setAttribute('fill', '#f0f0f0');
+                        element.setAttribute('opacity', '0.3');
+                        // Ensure stroke is visible even for empty zones
+                        element.setAttribute('stroke', 'black');
+                        element.setAttribute('stroke-width', '10');
+                        
+                        // Create zone label for empty zones
+                        createZoneLabel(zone, zones[zone], zonePositions[zone]);
+                        
+                        console.log(`Zone ${zone}: No shots`);
+                    }
+                } else {
+                    console.log(`Element not found for zone: ${zone}`);
+                }
+            });
+        }
+        
+        // Function to create zone labels
+        function createZoneLabel(zone, zoneStats, position) {
+            const svg = document.querySelector("svg");
+            const svgNS = "http://www.w3.org/2000/svg";
+            
+            // Create group for the label
+            const group = document.createElementNS(svgNS, 'g');
+            group.setAttribute('class', 'zone-label');
+            group.setAttribute('transform', `translate(${position.x},${position.y}) scale(1,-1) rotate(180) scale(-1,1)`); // Flip text back, rotate 180 degrees, and flip horizontally
+            
+            // Create background rectangle for better readability
+            const background = document.createElementNS(svgNS, 'rect');
+            background.setAttribute('x', -80);
+            background.setAttribute('y', -40);
+            background.setAttribute('width', 160);
+            background.setAttribute('height', 80);
+            background.setAttribute('rx', 8);
+            background.setAttribute('fill', 'rgba(255,255,255,0.95)');
+            background.setAttribute('stroke', 'black');
+            background.setAttribute('stroke-width', '3');
+            group.appendChild(background);
+            
+            // Create percentage text
+            const pctText = document.createElementNS(svgNS, 'text');
+            pctText.setAttribute('x', 0);
+            pctText.setAttribute('y', -5);
+            pctText.setAttribute('font-size', '30');
+            pctText.setAttribute('text-anchor', 'middle');
+            pctText.setAttribute('fill', '#000');
+            pctText.setAttribute('font-family', 'Arial, sans-serif');
+            pctText.setAttribute('font-weight', 'bold');
+            pctText.textContent = zoneStats.total > 0 ? `${zoneStats.percentage}%` : '0%';
+            group.appendChild(pctText);
+            
+            // Create shot count text
+            const countText = document.createElementNS(svgNS, 'text');
+            countText.setAttribute('x', 0);
+            countText.setAttribute('y', 25);
+            countText.setAttribute('font-size', '26');
+            countText.setAttribute('text-anchor', 'middle');
+            countText.setAttribute('fill', '#000');
+            countText.setAttribute('font-family', 'Arial, sans-serif');
+            countText.setAttribute('font-weight', 'bold');
+            countText.textContent = `${zoneStats.made}/${zoneStats.total}`;
+            group.appendChild(countText);
+            
+            // Add the label to the SVG
+            svg.appendChild(group);
+        }
+        
+        // Function to reset zone colors
+        function resetZoneColors() {
+            // Restore court line opacity
+            const courtLines = document.querySelectorAll('line, path[stroke="black"]');
+            courtLines.forEach(line => {
+                line.setAttribute('stroke-opacity', '1');
+            });
+            
+            // Remove zone labels
+            const existingLabels = document.querySelectorAll('.zone-label');
+            existingLabels.forEach(label => label.remove());
+            
+            const zones = ['paint-zone', 'left-corner-zone', 'right-corner-zone', 'left-midrange-zone', 'right-midrange-zone', 'left-above-break-zone', 'right-above-break-zone', 'rim-zone'];
+            zones.forEach(zoneId => {
+                const element = document.getElementById(zoneId);
+                if (element) {
+                    element.setAttribute('fill', 'transparent');
+                    element.setAttribute('opacity', '0');
+                    // Reset stroke to be invisible
+                    element.setAttribute('stroke', 'none');
+                }
+            });
+        }
+        
+        // Function to create zone cards on the court
+        function createZoneCards(zones) {
+            const container = document.getElementById('zone-cards-container');
+            container.innerHTML = '';
+
+            const positions = {
+                'rim':         { x: 750, y: 220 },
+                'paint':       { x: 750, y: 470 },
+                'left-midrange': { x: 375, y: 750 },
+                'right-midrange': { x: 1125, y: 750 },
+                'left-above-break': { x: 375, y: 1100 },
+                'right-above-break': { x: 1125, y: 1100 }
+            };
+            const zoneNames = {
+                'rim': 'Aro',
+                'paint': 'Pintura',
+                'left-midrange': 'Media distancia Izq',
+                'right-midrange': 'Media distancia Der',
+                'left-above-break': 'Triples frontales Izq',
+                'right-above-break': 'Triples frontales Der'
+            };
+
+            const svgNS = "http://www.w3.org/2000/svg";
+
+            // Get or create <defs> in the SVG
+            const svg = document.querySelector("svg");
+            let defs = svg.querySelector("defs");
+            if (!defs) {
+                defs = document.createElementNS(svgNS, "defs");
+                svg.appendChild(defs);
+            }
+
+            // Create <filter>
+            const filter = document.createElementNS(svgNS, "filter");
+            filter.setAttribute("id", "shadow-filter");
+            filter.setAttribute("x", "-50%");
+            filter.setAttribute("y", "-50%");
+            filter.setAttribute("width", "200%");
+            filter.setAttribute("height", "200%");
+
+            // Create <feDropShadow>
+            const feDropShadow = document.createElementNS(svgNS, "feDropShadow");
+            feDropShadow.setAttribute("dx", "0");
+            feDropShadow.setAttribute("dy", "4");
+            feDropShadow.setAttribute("stdDeviation", "4");
+            feDropShadow.setAttribute("flood-color", "black");
+            feDropShadow.setAttribute("flood-opacity", "0.3");
+
+            // Build filter
+            filter.appendChild(feDropShadow);
+            defs.appendChild(filter);
+
+            Object.keys(positions).forEach(zone => {
+                const stats = zones[zone];
+                if (!stats) return;
+                const { x, y } = positions[zone];
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('transform', `translate(${x},${y}) scale(1,-1)`); // flip back text
+
+                // Card background
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', -110);
+                rect.setAttribute('y', -45);
+                rect.setAttribute('width', 230);
+                rect.setAttribute('height', 200);
+                rect.setAttribute('rx', 8);
+                rect.setAttribute('fill', 'rgba(255,255,255,0.9)');
+                rect.setAttribute('filter', 'url(#shadow-filter)');
+                group.appendChild(rect);
+
+                // Text lines
+                const nameText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                nameText.setAttribute('x', 6);
+                nameText.setAttribute('y', -15);
+                nameText.setAttribute('font-size', 30);
+                nameText.setAttribute('text-anchor', 'middle');
+                nameText.setAttribute('fill', '#000');
+                nameText.setAttribute('font-family', 'Roboto, sans-serif');
+                nameText.setAttribute('font-weight', '500');
+                nameText.textContent = zoneNames[zone];
+                group.appendChild(nameText);
+
+                const pctText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                pctText.setAttribute('x', 6);
+                pctText.setAttribute('y', 55);
+                pctText.setAttribute('font-size', 36);
+                pctText.setAttribute('text-anchor', 'middle');
+                pctText.setAttribute('fill', '#000');
+                pctText.setAttribute('font-family', 'Roboto, sans-serif');
+                pctText.setAttribute('font-weight', '700');
+                pctText.textContent = `${stats.percentage}%`;
+                group.appendChild(pctText);
+
+                const madeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                madeText.setAttribute('x', 6);
+                madeText.setAttribute('y', 120);
+                madeText.setAttribute('font-size', 28);
+                madeText.setAttribute('text-anchor', 'middle');
+                madeText.setAttribute('fill', '#000');
+                madeText.setAttribute('font-family', 'Roboto, sans-serif');
+                madeText.setAttribute('font-weight', '400');
+                madeText.textContent = `${stats.made}/${stats.total}`;
+                group.appendChild(madeText);
+                
+
+                // Rotate text
+                //group.setAttribute(
+                //    'transform',
+                //    `translate(${x},${y}) scale(1,-1) rotate(180)`   // extra 180° so text is upright
+                //);
+
+                container.appendChild(group);
+            });
+        }
+
+        
+        
+        // Function to display statistics
+        function displayStats(shots) {
+            const totalShots = shots.length;
+            const madeShots = shots.filter(shot => shot.made).length;
+            const missedShots = totalShots - madeShots;
+            const shootingPercentage = totalShots > 0 ? ((madeShots / totalShots) * 100).toFixed(1) : 0;
+            
+            const zones = calculateZonePercentages(shots);
+            
+            let zoneStats = '';
+            Object.keys(zones).forEach(zone => {
+                if (zones[zone].total > 0) {
+                    zoneStats += `<p><strong>${zone.replace('-', ' ').toUpperCase()}:</strong> ${zones[zone].made}/${zones[zone].total} (${zones[zone].percentage}%)</p>`;
+                }
+            });
+            
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <h3>Player 2433147 Shooting Statistics</h3>
+                <p><strong>Total Shots:</strong> ${totalShots}</p>
+                <p><strong>Made Shots:</strong> ${madeShots}</p>
+                <p><strong>Missed Shots:</strong> ${missedShots}</p>
+                <p><strong>Overall Shooting Percentage:</strong> ${shootingPercentage}%</p>
+                <h4>Zone Breakdown:</h4>
+                ${zoneStats}
+            `;
+        }
+        
+        // Function to create heatmap
+        function createHeatmap(shots) {
+            const heatmapContainer = document.getElementById('heatmap-container');
+            heatmapContainer.innerHTML = '';
+            
+            const shotDensity = {};
+            const gridSize = 37.5; // Define grid size for heatmap
+            
+            // Calculate shot density and statistics for each grid cell
+            shots.forEach(shot => {
+                const coords = convertCoordinates(shot.coord_x_metros, shot.coord_y_metros);
+                const gridX = Math.floor(coords.x / gridSize);
+                const gridY = Math.floor(coords.y / gridSize);
+                const key = `${gridX},${gridY}`;
+                
+                if (!shotDensity[key]) {
+                    shotDensity[key] = { count: 0, made: 0 };
+                }
+                shotDensity[key].count++;
+                if (shot.made) {
+                    shotDensity[key].made++;
+                }
+            });
+            
+            // Find max density for scaling
+            const maxDensity = Math.max(...Object.values(shotDensity).map(d => d.count));
+            
+            // Set background image opacity to 0.3 for heatmap
+            const courtBackground = document.getElementById('court-background');
+            if (courtBackground) {
+                courtBackground.setAttribute('opacity', '0.3');
+            }
+            
+            // Set all area fills of the SVG to 0 opacity
+            const zones = ['paint-zone', 'left-corner-zone', 'right-corner-zone', 'mid-range-zone', 'above-break-zone', 'rim-zone'];
+            zones.forEach(zoneId => {
+                const element = document.getElementById(zoneId);
+                if (element) {
+                    element.setAttribute('opacity', '0');
+                }
+            });
+
+            // Update heatmap legend labels
+            const maxShots = Math.max(...Object.values(shotDensity).map(d => d.count));
+            const minShots = Math.min(...Object.values(shotDensity).map(d => d.count));
+            
+            document.getElementById('heatmap-max-label').textContent = `${maxShots} shots`;
+            document.getElementById('heatmap-min-label').textContent = `${minShots} shots`;
+            
+            // Show heatmap legend
+            document.getElementById('heatmap-legend').style.display = 'flex';
+            
+            // Create heatmap rectangles with tooltips
+            Object.keys(shotDensity).forEach(key => {
+                const [gridX, gridY] = key.split(',').map(Number);
+                const stats = shotDensity[key];
+                const intensity = stats.count / maxDensity;
+                const percentage = stats.count > 0 ? ((stats.made / stats.count) * 100).toFixed(1) : 0;
+                const color = `rgba(255, 0, 0, ${intensity})`;
+                
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", gridX * gridSize);
+                rect.setAttribute("y", gridY * gridSize);
+                rect.setAttribute("width", gridSize);
+                rect.setAttribute("height", gridSize);
+                rect.setAttribute("fill", color);
+                
+                // Add tooltip
+                const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+                title.textContent = `${percentage}% \n(${stats.made} de ${stats.count})`;
+                rect.appendChild(title);
+                
+                // Add hover effects
+                rect.addEventListener('mouseenter', () => {
+                    // Make hover grid the last to be drawn
+                    rect.parentNode.appendChild(rect);
+
+                    rect.setAttribute('stroke', 'rgba(0,0,0,1)');
+                    rect.setAttribute('stroke-width', '4');
+                    rect.setAttribute('transform', 'scale(1.05)');
+                    rect.setAttribute('transform-origin', `${(gridX * gridSize) + gridSize/2} ${(gridY * gridSize) + gridSize/2}`);
+                });
+                
+                rect.addEventListener('mouseleave', () => {
+                    rect.removeAttribute('stroke');
+                    rect.removeAttribute('stroke-width');
+                    rect.removeAttribute('transform');
+                });
+                
+                heatmapContainer.appendChild(rect);
+            });
+        }
+        
+        // Main function to load and display shots
+        async function loadPlayerShots() {
+            try {
+                const response = await fetch('Tiros por liga/players_shots_primera_feb.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Filter shots where equipo_string is "REAL BETIS BALONCESTO"
+                const allShots = [];
+                for (const matchId in data) {
+                    if (data[matchId] && Array.isArray(data[matchId])) {
+                        allShots.push(...data[matchId]);
+                    }
+                }
+                
+                playerShots = allShots.filter(shot => shot.equipo_string === "REAL BETIS BALONCESTO");
+                
+                if (playerShots.length === 0) {
+                    document.getElementById('error').textContent = `No shots found for player ${PLAYER_ID}`;
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('loading').style.display = 'none';
+                    return;
+                }
+                
+                // Clear loading message
+                document.getElementById('loading').style.display = 'none';
+                
+                // Get the shots container
+                const shotsContainer = document.getElementById('shots-container');
+                
+                // Add each shot to the court (limit to 500 shots)
+                const shotsToDisplay = playerShots.slice(0, 250);
+                shotsToDisplay.forEach(shot => {
+                    if (shot.coord_x_metros !== undefined && shot.coord_y_metros !== undefined) {
+                        const coords = convertCoordinates(shot.coord_x_metros, shot.coord_y_metros);
+                        const shotMarker = createShotMarker(coords.x, coords.y, shot.made, shot);
+                        shotsContainer.appendChild(shotMarker);
+                    }
+                });
+                
+                // Display statistics
+                displayStats(playerShots);
+                
+                // Show warning if shots were limited
+                if (playerShots.length > 500) {
+                    const warningDiv = document.createElement('div');
+                    warningDiv.style.cssText = 'text-align: center; color: #ff6b35; background-color: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ffeaa7;';
+                    warningDiv.innerHTML = `<strong>Note:</strong> Showing first 500 shots out of ${playerShots.length} total shots for better performance.`;
+                    document.querySelector('.container').insertBefore(warningDiv, document.querySelector('.toggle-container'));
+                }
+                
+                // Set up toggle functionality
+                setupToggleButtons();
+                
+            } catch (error) {
+                console.error('Error loading player shots:', error);
+                document.getElementById('error').textContent = `Error loading data: ${error.message}`;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        // Function to set up toggle buttons
+        function setupToggleButtons() {
+            const showShotsBtn = document.getElementById('showShots');
+            const showZonesBtn = document.getElementById('showZones');
+            const showHeatmapBtn = document.getElementById('showHeatmap');
+            const shotsContainer = document.getElementById('shots-container');
+            
+            const heatmapContainer = document.getElementById('heatmap-container');
+            
+            // Set initial state
+            showShotsBtn.classList.add('active');
+            
+            showShotsBtn.addEventListener('click', () => {
+                currentMode = 'shots';
+                showShotsBtn.classList.add('active');
+                showZonesBtn.classList.remove('active');
+                showHeatmapBtn.classList.remove('active');
+                
+                // Show shots
+                shotsContainer.style.display = 'block';
+                
+                // Hide zone cards, heatmap, and heatmap legend
+                document.getElementById('zone-cards-container').style.display = 'none';
+                heatmapContainer.style.display = 'none';
+                document.getElementById('heatmap-legend').style.display = 'none';
+                
+                // Reset zone colors
+                resetZoneColors();
+                
+                // Restore background image opacity
+                const courtBackground = document.getElementById('court-background');
+                if (courtBackground) {
+                    courtBackground.setAttribute('opacity', '0.5');
+                }
+            });
+            
+            showZonesBtn.addEventListener('click', () => {
+                currentMode = 'zones';
+                showZonesBtn.classList.add('active');
+                showShotsBtn.classList.remove('active');
+                showHeatmapBtn.classList.remove('active');
+                
+                // Hide shots, heatmap, and heatmap legend
+                shotsContainer.style.display = 'none';
+                heatmapContainer.style.display = 'none';
+                document.getElementById('heatmap-legend').style.display = 'none';
+                
+                const zones = calculateZonePercentages(playerShots);
+                updateZoneColors(zones);
+
+                //createZoneCards(zones);
+                document.getElementById('zone-cards-container').style.display = 'block';
+                
+                // Restore background image opacity
+                const courtBackground = document.getElementById('court-background');
+                if (courtBackground) {
+                    courtBackground.setAttribute('opacity', '0.5');
+                }
+            });
+            
+            showHeatmapBtn.addEventListener('click', () => {
+                currentMode = 'heatmap';
+                showHeatmapBtn.classList.add('active');
+                showShotsBtn.classList.remove('active');
+                showZonesBtn.classList.remove('active');
+                
+                // Hide shots and zone cards
+                shotsContainer.style.display = 'none';
+                document.getElementById('zone-cards-container').style.display = 'none';
+                
+                // Reset zone colors
+                resetZoneColors();
+                
+                // Show heatmap
+                heatmapContainer.style.display = 'flex';
+                
+                // Create heatmap
+                createHeatmap(playerShots);
+            });
+        }
+        
+        // Load the data when the page loads
+        window.addEventListener('load', loadPlayerShots);
+    </script>
+</body>
+</html> 
+</html> 

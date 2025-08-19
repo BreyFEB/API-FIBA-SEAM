@@ -99,6 +99,11 @@ nav.game-tabs-nav > a {
     margin: 0 auto;
 }
 
+.resumen-table {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 .resumen-table td.player-name-cell {
     text-align: left;
     padding-left: 10px;
@@ -152,7 +157,7 @@ th.table-sort-asc::after {
 .boxscore-table .starter-icon {
     display: inline-block;
     margin-right: 6px;
-    vertical-align: -1px;
+    vertical-align: middle;
 }
 .boxscore-table .starter-text {
     fill: #0d6efd;
@@ -248,6 +253,78 @@ th.table-sort-asc::after {
     border: 1px solid #c3e6cb; /* Subtle green border */
 }
 
+/* Shot map styles */
+.shotmap-container,
+.shotmap-court {
+    width: 100%;
+    max-width: 500px;
+}
+
+.shotmap-container {
+    margin: 0 auto;
+}
+
+.shotmap-court {
+    height: auto;
+    aspect-ratio: 1500 / 1400;
+}
+
+.shotmap-legend-made {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #28a745;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.shotmap-legend-missed {
+    width: 20px;
+    height: 20px;
+    position: relative;
+}
+
+.shotmap-legend-missed::before,
+.shotmap-legend-missed::after {
+    content: '';
+    position: absolute;
+    background-color: #dc3545;
+    width: 3px;
+    height: 20px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.shotmap-legend-missed::before {
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.shotmap-legend-missed::after {
+    transform: translateX(-50%) rotate(-45deg);
+}
+
+/* Responsive adjustments for shot map */
+
 .pbp-time   { flex: 0 0 2.5rem; }
 .pbp-action { flex: 1 0 60%; }
 .pbp-score  { flex: 0 0 20%; }
+
+/* Tooltip for mobile shot info */
+.shot-tooltip {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    z-index: 1000;
+    pointer-events: none;
+    white-space: pre-line;
+    max-width: 220px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.caption-top {
+    font-size: 0.6rem;
+}

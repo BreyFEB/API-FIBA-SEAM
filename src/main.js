@@ -1,4 +1,5 @@
 import { loadJSON } from './dataLoader.js';
+import { loadShotMap } from './shotMap.js';
 
 // Function to update game summary with dynamic data
 async function updateGameSummary() {
@@ -87,6 +88,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (sec.id === targetId) sec.classList.remove('d-none');
         else sec.classList.add('d-none');
       });
+      
+      // Load shot map data when Mapa de tiros section is shown
+      if (targetId === 'section-tiros') {
+        loadShotMap();
+      }
     });
 
     // Highlight the winning team in the game score

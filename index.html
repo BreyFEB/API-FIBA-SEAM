@@ -179,7 +179,7 @@
     </div>
     <template id="comparativa-stat-template">
       <div class="comparativa-stat mb-4">
-        <div class="stat-header bg-dark text-white p-2 mb-3">
+        <div class="stat-header bg-light text-black p-2 mb-0 border-bottom border-secondary-subtle">
           <h5 class="mb-0 stat-title"></h5>
         </div>
         <div class="stat-comparison">
@@ -204,6 +204,155 @@
         </div>
       </div>
     </template>
+  </div>
+  <div id="section-tiros" class="mt-3 d-none">
+    <div class="container-fluid">
+      <!-- Team tabs for shot map -->
+      <ul class="nav nav-underline mb-3 justify-content-center" id="shotmap-team-pills" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="local-shots-tab" data-bs-toggle="pill" data-bs-target="#local-shots-pane" type="button" role="tab" aria-controls="local-shots-pane" aria-selected="true">Equipo Local</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="away-shots-tab" data-bs-toggle="pill" data-bs-target="#away-shots-pane" type="button" role="tab" aria-controls="away-shots-pane" aria-selected="false">Equipo Visitante</button>
+        </li>
+      </ul>
+      
+      <!-- Tab content for shot maps -->
+      <div class="tab-content" id="shotmap-tab-content">
+        <div class="tab-pane fade show active" id="local-shots-pane" role="tabpanel" aria-labelledby="local-shots-tab">
+          <div class="d-flex justify-content-center">
+            <div class="shotmap-container">
+              <!-- Legend -->
+              <div class="d-flex justify-content-center gap-2 mb-3">
+                <div class="d-flex align-items-center">
+                  <div class="shotmap-legend-made me-2"></div>
+                  <span class="small">Tiros anotados</span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="shotmap-legend-missed me-2"></div>
+                  <span class="small">Tiros fallados</span>
+                </div>
+              </div>
+
+              <!-- SVG Court -->
+              <svg viewBox="0 0 1500 1400" xmlns="http://www.w3.org/2000/svg" class="shotmap-court" id="local-court">
+                <!-- Court background image -->
+                <image href="court-floor.avif" x="0" y="0" width="1500" height="1400" preserveAspectRatio="xMidYMid slice" opacity="0.5" id="local-court-background"/>
+                <!-- Court background -->
+                <rect x="0" y="0" width="1500" height="1400" fill="transparent"/>
+                
+                <!-- Flip Y axis to make (0,0) bottom-left -->
+                <g>
+                  <!-- Court border -->
+                  <rect x="0" y="0" width="1500" height="1400" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Vertical lines for corner threes -->
+                  <line x1="90" y1="0" x2="90" y2="300" stroke="#333" stroke-width="8"/>
+                  <line x1="1410" y1="0" x2="1410" y2="300" stroke="#333" stroke-width="8"/>
+
+                  <!-- Top arc (3pt line) -->
+                  <path d="M90,300 A675,675 0 0,0 1410,300" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Key (paint area) -->
+                  <line x1="505" y1="0" x2="505" y2="580" stroke="#333" stroke-width="8"/>
+                  <line x1="995" y1="0" x2="995" y2="580" stroke="#333" stroke-width="8"/>
+                  <line x1="500" y1="580" x2="1000" y2="580" stroke="#333" stroke-width="8"/>
+
+                  <!-- Free-throw semicircle -->
+                  <path d="M570,580 A180,180 0 0,0 930,580" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- No-charge semicircle -->
+                  <path d="M620,157.5 A130,130 0 0,0 880,157.5" fill="none" stroke="#333" stroke-width="8"/>
+                  <line x1="620" y1="157.5" x2="620" y2="137.5" stroke="#333" stroke-width="8"/>
+                  <line x1="880" y1="157.5" x2="880" y2="137.5" stroke="#333" stroke-width="8"/>
+
+                  <!-- Backboard and basket -->
+                  <line x1="750" y1="117.5" x2="750" y2="137.5" stroke="#333" stroke-width="8"/>
+                  <line x1="650" y1="117.5" x2="850" y2="117.5" stroke="#333" stroke-width="8"/>
+                  <circle cx="750" cy="157.5" r="20" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Top semicircle -->
+                  <path d="M570,1400 A180,180 0 0,1 930,1400" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Shots will be added here -->
+                  <g id="local-shots-container"></g>
+                </g>
+              </svg>
+              <div class="caption-top text-muted small mb-1">
+                Pasa el ratón por encima de los tiros o mantén pulsado para ver más información.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="away-shots-pane" role="tabpanel" aria-labelledby="away-shots-tab">
+          <div class="d-flex justify-content-center">
+            <div class="shotmap-container">
+              <!-- Legend -->
+              <div class="d-flex justify-content-center gap-2 mb-3">
+                <div class="d-flex align-items-center">
+                  <div class="shotmap-legend-made me-2"></div>
+                  <span class="small">Tiros anotados</span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="shotmap-legend-missed me-2"></div>
+                  <span class="small">Tiros fallados</span>
+                </div>
+              </div>
+              
+              <!-- SVG Court -->
+              <svg viewBox="0 0 1500 1400" xmlns="http://www.w3.org/2000/svg" class="shotmap-court" id="away-court">
+                <!-- Court background image -->
+                <image href="court-floor.avif" x="0" y="0" width="1500" height="1400" preserveAspectRatio="xMidYMid slice" opacity="0.5" id="away-court-background"/>
+                <!-- Court background -->
+                <rect x="0" y="0" width="1500" height="1400" fill="transparent"/>
+                
+                <!-- Flip Y axis to make (0,0) bottom-left -->
+                <g>
+                  <!-- Court border -->
+                  <rect x="0" y="0" width="1500" height="1400" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Vertical lines for corner threes -->
+                  <line x1="90" y1="0" x2="90" y2="300" stroke="#333" stroke-width="8"/>
+                  <line x1="1410" y1="0" x2="1410" y2="300" stroke="#333" stroke-width="8"/>
+
+                  <!-- Top arc (3pt line) -->
+                  <path d="M90,300 A675,675 0 0,0 1410,300" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Key (paint area) -->
+                  <line x1="505" y1="0" x2="505" y2="580" stroke="#333" stroke-width="8"/>
+                  <line x1="995" y1="0" x2="995" y2="580" stroke="#333" stroke-width="8"/>
+                  <line x1="500" y1="580" x2="1000" y2="580" stroke="#333" stroke-width="8"/>
+
+                  <!-- Free-throw semicircle -->
+                  <path d="M570,580 A180,180 0 0,0 930,580" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- No-charge semicircle -->
+                  <path d="M620,157.5 A130,130 0 0,0 880,157.5" fill="none" stroke="#333" stroke-width="8"/>
+                  <line x1="620" y1="157.5" x2="620" y2="137.5" stroke="#333" stroke-width="8"/>
+                  <line x1="880" y1="157.5" x2="880" y2="137.5" stroke="#333" stroke-width="8"/>
+
+                  <!-- Backboard and basket -->
+                  <line x1="750" y1="117.5" x2="750" y2="137.5" stroke="#333" stroke-width="8"/>
+                  <line x1="650" y1="117.5" x2="850" y2="117.5" stroke="#333" stroke-width="8"/>
+                  <circle cx="750" cy="157.5" r="20" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Top semicircle -->
+                  <path d="M570,1400 A180,180 0 0,1 930,1400" fill="none" stroke="#333" stroke-width="8"/>
+
+                  <!-- Shots will be added here -->
+                  <g id="away-shots-container"></g>
+                </g>
+              </svg>
+              <!-- Hint caption -->
+              <div class="caption-top text-muted small mb-1">
+                Pasa el ratón por encima de los tiros o mantén pulsado para ver más información.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Four Factors Glossary Modal -->
@@ -253,5 +402,6 @@
 <script type="module" src="src/avanzado.js"></script>
 <script type="module" src="src/comparativasAvanzada.js"></script>
 <script type="module" src="src/comparativasBasica.js"></script>
+<script type="module" src="src/shotMap.js"></script>
 </body>
 </html>
