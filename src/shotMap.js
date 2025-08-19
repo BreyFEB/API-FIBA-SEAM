@@ -275,6 +275,73 @@ function displayShotsOnCourt(shots, containerId, boxscoreData) {
   });
 }
 
+function populatePlayerFilter(containerId, shots, boxscoreData, prefix) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  //container.innerHTML = '';
+  const seen = new Set();
+  shots.forEach(s => {
+    if (!s.C1) return;
+    const idStr = s.C1.split('_')[1];
+    const pid = parseInt(idStr, 10);
+    if (!pid || seen.has(pid)) return;
+    seen.add(pid);
+    const name = findPlayerName(pid, boxscoreData) || `Jugador ${pid}`;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'form-check form-check-inline';
+    const input = document.createElement('input');
+    input.className = 'form-check-input';
+    input.type = 'checkbox';
+    input.id = `${prefix}-player-${pid}`;
+    input.value = String(pid);
+    input.checked = true;
+    const label = document.createElement('label');
+    label.className = 'form-check-label small';
+    label.setAttribute('for', input.id);
+    label.textContent = name;
+    wrapper.appendChild(input);
+    wrapper.appendChild(label);
+    container.appendChild(wrapper);
+  });
+}
+
+function getActiveQuarters(checkboxContainerId) {
+  const container = document.getElementById(checkboxContainerId);
+  if (!container) return new Set(['Q1','Q2','Q3','Q4']);
+  const active = new Set();
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (cb.checked) active.add(cb.value);
+  });
+  return active;
+}
+
+function getCheckedPlayerIds(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return null;
+  const ids = new Set();
+  const inputs = container.querySelectorAll('input[type="checkbox"]');
+  inputs.forEach(cb => { if (cb.checked) ids.add(cb.value); });
+  // if none checked, return empty set so result is empty (explicit selection)
+  return ids;
+}
+
+function filterShots(allShots, selectedPlayerIds, activeQuarters) {
+  return allShots.filter(s => {
+    const quarterOk = activeQuarters.has(s.quarter);
+    let playerOk = true;
+    if (selectedPlayerIds !== null) {
+      // When a player filter container exists, an empty selection means show none
+      if (selectedPlayerIds.size === 0) {
+        playerOk = false;
+      } else {
+        const pid = s.C1 ? s.C1.split('_')[1] : undefined;
+        playerOk = !!pid && selectedPlayerIds.has(pid);
+      }
+    }
+    return quarterOk && playerOk;
+  });
+}
+
 // Update team tab labels with actual team names
 function updateTeamTabLabels(localTeam, awayTeam) {
   const localTab = document.getElementById('local-shots-tab');
@@ -299,9 +366,63 @@ async function loadShotMap() {
     // Update team tab labels
     updateTeamTabLabels(localTeam, awayTeam);
     
-    // Display shots on respective courts with boxscore data for player names
+    // Populate filters
+    populatePlayerFilter('local-player-filters', localShots, boxscoreData, 'local');
+    populatePlayerFilter('away-player-filters', awayShots, boxscoreData, 'away');
+
+    // Initial render with all filters checked
     displayShotsOnCourt(localShots, 'local-shots-container', boxscoreData);
     displayShotsOnCourt(awayShots, 'away-shots-container', boxscoreData);
+
+    // Wire filter events
+    const localPlayerBox = document.getElementById('local-player-filters');
+    const awayPlayerBox = document.getElementById('away-player-filters');
+    const localQuarterBox = document.getElementById('local-quarter-filters');
+    const awayQuarterBox = document.getElementById('away-quarter-filters');
+    const localPlayersAll = document.getElementById('local-players-all');
+    const awayPlayersAll = document.getElementById('away-players-all');
+    const localQuartersAll = document.getElementById('local-quarters-all');
+    const awayQuartersAll = document.getElementById('away-quarters-all');
+
+    const recomputeLocal = () => {
+      const activeQ = getActiveQuarters('local-quarter-filters');
+      const ids = getCheckedPlayerIds('local-player-filters');
+      const filtered = filterShots(localShots, ids, activeQ);
+      displayShotsOnCourt(filtered, 'local-shots-container', boxscoreData);
+    };
+    const recomputeAway = () => {
+      const activeQ = getActiveQuarters('away-quarter-filters');
+      const ids = getCheckedPlayerIds('away-player-filters');
+      const filtered = filterShots(awayShots, ids, activeQ);
+      displayShotsOnCourt(filtered, 'away-shots-container', boxscoreData);
+    };
+
+    if (localPlayerBox) localPlayerBox.addEventListener('change', recomputeLocal);
+    if (awayPlayerBox) awayPlayerBox.addEventListener('change', recomputeAway);
+    if (localQuarterBox) localQuarterBox.addEventListener('change', (e) => {
+      const target = e.target;
+      if (target && target.matches('input[type="checkbox"]') && String(target.id).includes('quarters-all')) {
+        setAll(localQuarterBox, target.checked);
+      }
+      recomputeLocal();
+    });
+    if (awayQuarterBox) awayQuarterBox.addEventListener('change', (e) => {
+      const target = e.target;
+      if (target && target.matches('input[type="checkbox"]') && String(target.id).includes('quarters-all')) {
+        setAll(awayQuarterBox, target.checked);
+      }
+      recomputeAway();
+    });
+
+    // Select/Deselect all toggles
+    const setAll = (container, checked) => {
+      if (!container) return;
+      container.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = checked; });
+    };
+    if (localPlayersAll) localPlayersAll.addEventListener('change', () => { setAll(localPlayerBox, localPlayersAll.checked); recomputeLocal(); });
+    if (awayPlayersAll) awayPlayersAll.addEventListener('change', () => { setAll(awayPlayerBox, awayPlayersAll.checked); recomputeAway(); });
+    if (localQuartersAll) localQuartersAll.addEventListener('change', () => { setAll(localQuarterBox, localQuartersAll.checked); recomputeLocal(); });
+    if (awayQuartersAll) awayQuartersAll.addEventListener('change', () => { setAll(awayQuarterBox, awayQuartersAll.checked); recomputeAway(); });
     
     console.log(`Loaded ${localShots.length} shots for ${localTeam.name}`);
     console.log(`Loaded ${awayShots.length} shots for ${awayTeam.name}`);

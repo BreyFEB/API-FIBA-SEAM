@@ -179,7 +179,7 @@
     </div>
     <template id="comparativa-stat-template">
       <div class="comparativa-stat mb-4">
-        <div class="stat-header bg-light text-black p-2 mb-0 border-bottom border-secondary-subtle">
+        <div class="stat-header bg-light p-2 mb-0 border-bottom border-secondary-subtle">
           <h5 class="mb-0 stat-title"></h5>
         </div>
         <div class="stat-comparison">
@@ -222,6 +222,50 @@
         <div class="tab-pane fade show active" id="local-shots-pane" role="tabpanel" aria-labelledby="local-shots-tab">
           <div class="d-flex justify-content-center">
             <div class="shotmap-container">
+              <!-- Filters (collapsed by default) -->
+              <div class="mb-2">
+                <button class="btn btn-outline-secondary btn-sm d-block mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#local-filters" aria-expanded="false" aria-controls="local-filters">Filtros</button>
+              </div>
+              <div class="collapse mb-2" id="local-filters">
+                <div class="card card-body py-2">
+                  <div class="row g-3 align-items-start">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label small mb-1">Jugadores</label>
+                      <div id="local-player-filters" class="d-flex flex-column gap-2">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="local-players-all" checked>
+                          <label class="form-check-label small" for="local-players-all">Todos</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label small mb-1">Cuartos</label>
+                      <div id="local-quarter-filters" class="d-flex flex-column gap-2">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-quarters-all" checked>
+                          <label class="form-check-label small" for="local-quarters-all">Todos</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="local-q1" value="Q1" checked>
+                          <label class="form-check-label" for="local-q1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="local-q2" value="Q2" checked>
+                          <label class="form-check-label" for="local-q2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="local-q3" value="Q3" checked>
+                          <label class="form-check-label" for="local-q3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="local-q4" value="Q4" checked>
+                          <label class="form-check-label" for="local-q4">4</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Legend -->
               <div class="d-flex justify-content-center gap-2 mb-3">
                 <div class="d-flex align-items-center">
@@ -288,6 +332,50 @@
         <div class="tab-pane fade" id="away-shots-pane" role="tabpanel" aria-labelledby="away-shots-tab">
           <div class="d-flex justify-content-center">
             <div class="shotmap-container">
+              <!-- Filters (collapsed by default) -->
+              <div class="mb-2">
+                <button class="btn btn-outline-secondary btn-sm d-block mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#away-filters" aria-expanded="false" aria-controls="away-filters">Filtros</button>
+              </div>
+              <div class="collapse mb-2" id="away-filters">
+                <div class="card card-body py-2">
+                  <div class="row g-3 align-items-start">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label small mb-1">Jugadores</label>
+                      <div id="away-player-filters" class="d-flex flex-column gap-2">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="away-players-all" checked>
+                          <label class="form-check-label small" for="away-players-all">Todos</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label small mb-1">Cuartos</label>
+                      <div id="away-quarter-filters" class="d-flex flex-column gap-2">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-quarters-all" checked>
+                          <label class="form-check-label small" for="away-quarters-all">Todos</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-q1" value="Q1" checked>
+                          <label class="form-check-label" for="away-q1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-q2" value="Q2" checked>
+                          <label class="form-check-label" for="away-q2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-q3" value="Q3" checked>
+                          <label class="form-check-label" for="away-q3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="away-q4" value="Q4" checked>
+                          <label class="form-check-label" for="away-q4">4</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Legend -->
               <div class="d-flex justify-content-center gap-2 mb-3">
                 <div class="d-flex align-items-center">
