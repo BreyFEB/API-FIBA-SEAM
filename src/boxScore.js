@@ -46,7 +46,7 @@ function createPlayerRow(player) {
   // Create name cell with optional starter icon
   const nameValue = formatPlayerName(player.firstName, player.lastName);
   const nameCell = document.createElement('td');
-  nameCell.className = 'player-name-cell';
+  nameCell.className = 'player-name-cell px-1';
   nameCell.title = `${player.firstName} ${player.lastName}`;
   // Add tooltip 'Titular' if player is starter
   if (player.isStarter) {
@@ -96,6 +96,7 @@ function createPlayerRow(player) {
       tr.appendChild(element);
     } else {
       const td = document.createElement('td');
+      td.classList.add('px-1');
       if (title) td.title = title;
       if (rawValue !== undefined) {
         td.setAttribute('data-raw-value', rawValue);

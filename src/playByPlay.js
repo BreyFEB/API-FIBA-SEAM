@@ -17,15 +17,69 @@ function timeToSeconds(timeStr) {
   return m * 60 + s;
 }
 
-function createPbpItemNode(tpl, { time, action, scoreA, scoreB, teamClass, meta }) {
+function createPbpItemNode(tpl, { time, action, scoreA, scoreB, teamClass, meta, scoringBadge, substitutionArrow }) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   if (teamClass) node.classList.add(teamClass);
   node.querySelector('.pbp-time').textContent = time || '';
-  node.querySelector('.pbp-action').textContent = action || '';
+  
+  const actionEl = node.querySelector('.pbp-action');
+  actionEl.textContent = action || '';
+  
+  // Add scoring badge if present
+  if (scoringBadge) {
+    const badge = document.createElement('span');
+    badge.className = 'badge bg-success ms-2';
+    badge.textContent = scoringBadge;
+    actionEl.appendChild(badge);
+  }
+  
+  // Add substitution arrow if present
+  if (substitutionArrow) {
+    const arrow = document.createElement('span');
+    arrow.className = `${substitutionArrow.className} ms-2`;
+    arrow.textContent = substitutionArrow.text;
+    actionEl.appendChild(arrow);
+  }
+  
   node.querySelector('.pbp-score').textContent = `${scoreA ?? ''} - ${scoreB ?? ''}`;
   const metaEl = node.querySelector('.pbp-meta');
   if (metaEl) metaEl.textContent = meta || '';
   return node;
+}
+
+function getScoringBadge(eventData) {
+  // Check if this is a successful scoring action
+  if (eventData.SU !== '+') return null; // Only for successful actions
+  
+  // Determine points based on AC field
+  switch (eventData.AC) {
+    case 'P3':
+      return '+3';
+    case 'P2':
+      return '+2';
+    case 'FT':
+      return '+1';
+    default:
+      return null;
+  }
+}
+
+function getSubstitutionArrow(action) {
+  const actionLower = action.toLowerCase();
+  
+  if (actionLower.includes('cambio (entra)')) {
+    return {
+      text: '>>',
+      className: 'text-success fw-bold'
+    };
+  } else if (actionLower.includes('cambio (sale)')) {
+    return {
+      text: '<<',
+      className: 'text-danger fw-bold'
+    };
+  }
+  
+  return null;
 }
 
 function translateToSpanish(action) {
@@ -205,15 +259,19 @@ async function renderPlayByPlay() {
         if (localOrgId != null && orgFromEvent === localOrgId) teamClass = 'pbp-local';
         else if (awayOrgId != null && orgFromEvent === awayOrgId) teamClass = 'pbp-away';
       }
-      const actionEs = translateToSpanish(ev.Action);
-      const node = createPbpItemNode(itemTpl, {
-        time: ev.Time,
-        action: actionEs,
-        scoreA: ev.SA,
-        scoreB: ev.SB,
-        teamClass,
-        meta: [playerName, teamName].filter(Boolean).join(' · '),
-      });
+             const actionEs = translateToSpanish(ev.Action);
+       const scoringBadge = getScoringBadge(ev);
+       const substitutionArrow = getSubstitutionArrow(actionEs);
+       const node = createPbpItemNode(itemTpl, {
+         time: ev.Time,
+         action: actionEs,
+         scoreA: ev.SA,
+         scoreB: ev.SB,
+         teamClass,
+         meta: [playerName, teamName].filter(Boolean).join(' · '),
+         scoringBadge,
+         substitutionArrow,
+       });
       paneList.appendChild(node);
     });
 

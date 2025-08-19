@@ -54,9 +54,10 @@
       </template>
       <template id="team-pane-template">
         <div class="tab-pane fade" role="tabpanel">
-          <div class="resumen-table-wrap">
-            <table class="table table-bordered table-striped table-sm mb-0 resumen-table">
-              <thead>
+                  <div class="resumen-table-wrap">
+          <table class="table table-bordered table-striped table-sm mb-0 resumen-table">
+            <caption class="caption-top text-muted small text-left">Clica en las columnas para reordenar</caption>
+            <thead>
                 <tr>
                   <th title="Dorsal" data-sort-key="uniformNumber">DOR</th>
                   <th title="Jugador" data-sort-key="name" class="player-name-col">JUG</th>
@@ -91,9 +92,9 @@
       <div class="pbp-item card mb-2">
         <div class="card-body py-2">
           <div class="d-flex align-items-center">
-            <div class="pbp-time text-muted small me-3">00:00</div>
-            <div class="pbp-action flex-grow-1 fw-semibold">Action text</div>
-            <div class="pbp-score badge text-bg-light ms-3">00 - 00</div>
+            <div class="pbp-time text-muted small">00:00</div>
+            <div class="pbp-action fw-semibold">Acción</div>
+            <div class="pbp-score badge text-bg-light">00 - 00</div>
           </div>
           <div class="pbp-meta text-muted small mt-1"></div>
         </div>
@@ -112,11 +113,12 @@
       <div class="tab-pane fade" role="tabpanel">
         <div class="boxscore-table-wrap">
           <table class="table table-bordered table-striped table-sm mb-0 boxscore-table">
+            <caption class="caption-top text-left small">Clica en las columnas para reordenar</caption>
             <thead>
               <tr>
                 <th title="Dorsal" data-sort-key="uniformNumber">DOR</th>
-                <th title="Jugador" data-sort-key="name" class="player-name-col">JUG</th>
-                <th title="Minutos" data-sort-key="minutes">MIN</th>
+                <th title="Jugador" data-sort-key="name" class="player-name-col p3">JUG</th>
+                <th title="Minutos" data-sort-key="minutes p3">MIN</th>
                 <th title="Puntos" data-sort-key="points">PTS</th>
                 <th title="Tiros de campo anotados" data-sort-key="fieldGoalsMade">TC-A</th>
                 <th title="Tiros de campo intentados" data-sort-key="fieldGoalsAttempted">TC-I</th>

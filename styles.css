@@ -82,6 +82,7 @@ nav.game-tabs-nav > a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
 }
 .player-name-col {
     max-width: 120px;
@@ -96,6 +97,11 @@ nav.game-tabs-nav > a {
     max-width: 90vw;
     overflow: auto;
     margin: 0 auto;
+}
+
+.resumen-table td.player-name-cell {
+    text-align: left;
+    padding-left: 10px;
 }
 
 /* Make DOR and numeric columns as narrow as possible */
@@ -161,6 +167,9 @@ th.table-sort-asc::after {
 }
 .pbp-item .pbp-time {
     width: 3.5rem;
+    text-align: left;
+}
+.pbp-item .pbp-action {
     text-align: left;
 }
 .pbp-item .pbp-score {
@@ -232,3 +241,13 @@ th.table-sort-asc::after {
     }
 }
 
+/* Custom scoring badge colors */
+.badge.bg-success {
+    background-color: #d4edda !important; /* Light green background */
+    color: #155724 !important; /* Stronger green text */
+    border: 1px solid #c3e6cb; /* Subtle green border */
+}
+
+.pbp-time   { flex: 0 0 15%; }
+.pbp-action { flex: 0 0 60%; }
+.pbp-score  { flex: 0 0 20%; }
