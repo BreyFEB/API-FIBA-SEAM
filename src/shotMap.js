@@ -433,25 +433,53 @@ async function loadShotMap() {
     let localShowMissed = true;
     let awayShowMade = true;
     let awayShowMissed = true;
-    const makeClickableLegend = (paneSelector, which) => {
-      const icon = document.querySelector(`${paneSelector} .${which === 'made' ? 'shotmap-legend-made' : 'shotmap-legend-missed'}`);
-      if (!icon) return null;
-      const wrapper = icon.parentElement; // d-flex align-items-center
-      if (!wrapper) return null;
-      wrapper.classList.add('cursor-pointer');
-      return wrapper;
-    };
-    const localMadeEl = makeClickableLegend('#local-shots-pane', 'made');
-    const localMissedEl = makeClickableLegend('#local-shots-pane', 'missed');
-    const awayMadeEl = makeClickableLegend('#away-shots-pane', 'made');
-    const awayMissedEl = makeClickableLegend('#away-shots-pane', 'missed');
-    if (localMadeEl) localMadeEl.addEventListener('click', () => { localShowMade = !localShowMade; localMadeEl.classList.toggle('text-decoration-line-through', !localShowMade); recomputeLocal(); });
-    if (localMissedEl) localMissedEl.addEventListener('click', () => { localShowMissed = !localShowMissed; localMissedEl.classList.toggle('text-decoration-line-through', !localShowMissed); recomputeLocal(); });
-    if (awayMadeEl) awayMadeEl.addEventListener('click', () => { awayShowMade = !awayShowMade; awayMadeEl.classList.toggle('text-decoration-line-through', !awayShowMade); recomputeAway(); });
-    if (awayMissedEl) awayMissedEl.addEventListener('click', () => { awayShowMissed = !awayShowMissed; awayMissedEl.classList.toggle('text-decoration-line-through', !awayShowMissed); recomputeAway(); });
     
-    console.log(`Loaded ${localShots.length} shots for ${localTeam.name}`);
-    console.log(`Loaded ${awayShots.length} shots for ${awayTeam.name}`);
+    // Handle clicks on .shot-map-legend-away, .shot-map-legend-local 
+    const parentLegendDivs = ['.shot-map-legend-local', '.shot-map-legend-away'];
+    const indLegendDivs = ['.made-legend', '.missed-legend'];
+
+    // Add click event listeners
+    parentLegendDivs.forEach((parentLegend) => {
+        const madeLegend = parentLegend + ' > ' + indLegendDivs[0];
+        const missedLegend = parentLegend + ' > ' + indLegendDivs[1];
+
+        const madeLegendEl = document.querySelector(madeLegend);
+        const missedLegendEl = document.querySelector(missedLegend);
+
+        madeLegendEl.addEventListener('click', () => {
+            // Get the text span
+            const legendSpanEl = madeLegendEl.querySelector('span');
+            
+            if (madeLegend.includes('local')) {
+                localShowMade ? localShowMade = false : localShowMade = true;
+                legendSpanEl.classList.toggle('text-decoration-line-through');
+                recomputeLocal();
+            } else if (madeLegend.includes('away')) {
+                awayShowMade ? awayShowMade = false : awayShowMade = true;
+                legendSpanEl.classList.toggle('text-decoration-line-through');
+                recomputeAway();
+            }
+
+        })
+        
+        missedLegendEl.addEventListener('click', () => {
+            // Get the text span
+            const legendSpanEl = missedLegendEl.querySelector('span');
+            
+            if (missedLegend.includes('local')) {
+                localShowMissed ? localShowMissed = false : localShowMissed = true;
+                legendSpanEl.classList.toggle('text-decoration-line-through');
+                recomputeLocal();
+            } else if (missedLegend.includes('away')) {
+                awayShowMissed ? awayShowMissed = false : awayShowMissed = true;
+                legendSpanEl.classList.toggle('text-decoration-line-through');
+                recomputeAway();
+            }
+
+        }) 
+    })
+
+
     
   } catch (error) {
     console.error('Error loading shot map:', error);

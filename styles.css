@@ -328,3 +328,11 @@ th.table-sort-asc::after {
 .caption-top {
     font-size: 0.7rem;
 }
+
+.shot-map-legend-away, .shot-map-legend-local {
+    cursor: pointer;
+}
+
+.shot-map-legend-away *, .shot-map-legend-local * {
+    cursor: pointer;
+}

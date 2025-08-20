@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -267,14 +267,14 @@
                 </div>
               </div>
               <!-- Legend -->
-              <div class="d-flex justify-content-center gap-2 mb-3">
-                <div class="d-flex align-items-center">
+              <div class="d-flex justify-content-center gap-2 mb-3 shot-map-legend-local">
+                <div class="d-flex align-items-center made-legend">
                   <div class="shotmap-legend-made me-2"></div>
-                  <span class="small cursor-pointer">Tiros anotados</span>
+                  <span class="small user-select-none">Tiros anotados</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center missed-legend">
                   <div class="shotmap-legend-missed me-2"></div>
-                  <span class="small cursor-pointer">Tiros fallados</span>
+                  <span class="small user-select-none">Tiros fallados</span>
                 </div>
               </div>
 
@@ -377,14 +377,14 @@
                 </div>
               </div>
               <!-- Legend -->
-              <div class="d-flex justify-content-center gap-2 mb-3">
-                <div class="d-flex align-items-center">
+              <div class="d-flex justify-content-center gap-2 mb-3 shot-map-legend-away">
+                <div class="d-flex align-items-center made-legend">
                   <div class="shotmap-legend-made me-2"></div>
-                  <span class="small">Tiros anotados</span>
+                  <span class="small user-select-none">Tiros anotados</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center missed-legend">
                   <div class="shotmap-legend-missed me-2"></div>
-                  <span class="small">Tiros fallados</span>
+                  <span class="small user-select-none">Tiros fallados</span>
                 </div>
               </div>
               
@@ -480,8 +480,7 @@
   </div>
 
 <!-- Bootstrap JS with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 <script type="module" src="src/main.js"></script>
 <script type="module" src="src/dataLoader.js"></script>
 <script type="module" src="src/boxscoreResumen.js"></script>
