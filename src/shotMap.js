@@ -387,13 +387,17 @@ async function loadShotMap() {
     const recomputeLocal = () => {
       const activeQ = getActiveQuarters('local-quarter-filters');
       const ids = getCheckedPlayerIds('local-player-filters');
-      const filtered = filterShots(localShots, ids, activeQ);
+      let filtered = filterShots(localShots, ids, activeQ);
+      if (!localShowMade) filtered = filtered.filter(s => !s.made);
+      if (!localShowMissed) filtered = filtered.filter(s => s.made);
       displayShotsOnCourt(filtered, 'local-shots-container', boxscoreData);
     };
     const recomputeAway = () => {
       const activeQ = getActiveQuarters('away-quarter-filters');
       const ids = getCheckedPlayerIds('away-player-filters');
-      const filtered = filterShots(awayShots, ids, activeQ);
+      let filtered = filterShots(awayShots, ids, activeQ);
+      if (!awayShowMade) filtered = filtered.filter(s => !s.made);
+      if (!awayShowMissed) filtered = filtered.filter(s => s.made);
       displayShotsOnCourt(filtered, 'away-shots-container', boxscoreData);
     };
 
@@ -423,6 +427,28 @@ async function loadShotMap() {
     if (awayPlayersAll) awayPlayersAll.addEventListener('change', () => { setAll(awayPlayerBox, awayPlayersAll.checked); recomputeAway(); });
     if (localQuartersAll) localQuartersAll.addEventListener('change', () => { setAll(localQuarterBox, localQuartersAll.checked); recomputeLocal(); });
     if (awayQuartersAll) awayQuartersAll.addEventListener('change', () => { setAll(awayQuarterBox, awayQuartersAll.checked); recomputeAway(); });
+    
+    // Legend filters: made/missed toggles per team
+    let localShowMade = true;
+    let localShowMissed = true;
+    let awayShowMade = true;
+    let awayShowMissed = true;
+    const makeClickableLegend = (paneSelector, which) => {
+      const icon = document.querySelector(`${paneSelector} .${which === 'made' ? 'shotmap-legend-made' : 'shotmap-legend-missed'}`);
+      if (!icon) return null;
+      const wrapper = icon.parentElement; // d-flex align-items-center
+      if (!wrapper) return null;
+      wrapper.classList.add('cursor-pointer');
+      return wrapper;
+    };
+    const localMadeEl = makeClickableLegend('#local-shots-pane', 'made');
+    const localMissedEl = makeClickableLegend('#local-shots-pane', 'missed');
+    const awayMadeEl = makeClickableLegend('#away-shots-pane', 'made');
+    const awayMissedEl = makeClickableLegend('#away-shots-pane', 'missed');
+    if (localMadeEl) localMadeEl.addEventListener('click', () => { localShowMade = !localShowMade; localMadeEl.classList.toggle('text-decoration-line-through', !localShowMade); recomputeLocal(); });
+    if (localMissedEl) localMissedEl.addEventListener('click', () => { localShowMissed = !localShowMissed; localMissedEl.classList.toggle('text-decoration-line-through', !localShowMissed); recomputeLocal(); });
+    if (awayMadeEl) awayMadeEl.addEventListener('click', () => { awayShowMade = !awayShowMade; awayMadeEl.classList.toggle('text-decoration-line-through', !awayShowMade); recomputeAway(); });
+    if (awayMissedEl) awayMissedEl.addEventListener('click', () => { awayShowMissed = !awayShowMissed; awayMissedEl.classList.toggle('text-decoration-line-through', !awayShowMissed); recomputeAway(); });
     
     console.log(`Loaded ${localShots.length} shots for ${localTeam.name}`);
     console.log(`Loaded ${awayShots.length} shots for ${awayTeam.name}`);
